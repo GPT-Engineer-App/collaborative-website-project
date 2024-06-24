@@ -1,35 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import DataTable from '../components/DataTable';
 import EditDataForm from '../components/EditDataForm';
 import AddDataForm from '../components/AddDataForm';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 
+import { useTasks, useAddTask, useUpdateTask, useDeleteTask } from '../integrations/supabase/index.js';
+
 const Dashboard = () => {
+  const { data: tasks, refetch } = useTasks();
+  const addTaskMutation = useAddTask();
+  const updateTaskMutation = useUpdateTask();
+  const deleteTaskMutation = useDeleteTask();
+
   const [selectedData, setSelectedData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const data = useMemo(
-    () => [
-      {
-        task: 'Task 1',
-        meeting: 'Meeting 1',
-        project: 'Project A',
-      },
-      {
-        task: 'Task 2',
-        meeting: 'Meeting 2',
-        project: 'Project B',
-      },
-      {
-        task: 'Task 3',
-        meeting: 'Meeting 3',
-        project: 'Project C',
-      },
-    ],
-    []
-  );
 
   const columns = useMemo(
     () => [
@@ -78,10 +64,13 @@ const Dashboard = () => {
     setIsDeleting(true);
   };
 
-  const handleSave = (updatedData) => {
-    // Update the data state with the edited data
-    // This is a placeholder logic, you should replace it with actual update logic
-    console.log('Updated Data:', updatedData);
+  const handleSave = async (updatedData) => {
+    if (isAdding) {
+      await addTaskMutation.mutateAsync(updatedData);
+    } else if (isEditing) {
+      await updateTaskMutation.mutateAsync(updatedData);
+    }
+    refetch();
     setIsEditing(false);
     setIsAdding(false);
   };
@@ -92,10 +81,9 @@ const Dashboard = () => {
     setIsDeleting(false);
   };
 
-  const handleConfirmDelete = () => {
-    // Delete the selected data
-    // This is a placeholder logic, you should replace it with actual delete logic
-    console.log('Deleted Data:', selectedData);
+  const handleConfirmDelete = async () => {
+    await deleteTaskMutation.mutateAsync(selectedData.task_id);
+    refetch();
     setIsDeleting(false);
   };
 
@@ -110,7 +98,7 @@ const Dashboard = () => {
         >
           Add New
         </button>
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={tasks || []} />
       </div>
       {isEditing && (
         <EditDataForm
