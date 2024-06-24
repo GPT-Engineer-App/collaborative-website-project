@@ -3,21 +3,23 @@ import React, { useState } from 'react';
 const AddDataForm = ({ onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     task: '',
-    meeting: '',
     project: '',
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    if (name !== 'meeting') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    const { meeting, ...dataToSave } = formData;
+    onSave(dataToSave);
   };
 
   return (
@@ -32,16 +34,7 @@ const AddDataForm = ({ onSave, onCancel }) => {
           className="mt-1 p-2 border rounded w-full"
         />
       </div>
-      <div className="mb-4">
-        <label className="block text-gray-700">Meeting</label>
-        <input
-          type="text"
-          name="meeting"
-          value={formData.meeting}
-          onChange={handleChange}
-          className="mt-1 p-2 border rounded w-full"
-        />
-      </div>
+      
       <div className="mb-4">
         <label className="block text-gray-700">Project</label>
         <input

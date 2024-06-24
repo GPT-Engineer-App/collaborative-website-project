@@ -67,10 +67,11 @@ const Dashboard = () => {
   };
 
   const handleSave = async (updatedData) => {
+    const { meeting, ...dataToSave } = updatedData;
     if (isAdding) {
-      await addTaskMutation.mutateAsync(updatedData);
+      await addTaskMutation.mutateAsync(dataToSave);
     } else if (isEditing) {
-      await updateTaskMutation.mutateAsync(updatedData);
+      await updateTaskMutation.mutateAsync(dataToSave);
     }
     refetch();
     setIsEditing(false);
@@ -78,7 +79,8 @@ const Dashboard = () => {
   };
 
   const handleSaveProject = async (newProjectData) => {
-    await addProjectMutation.mutateAsync(newProjectData);
+    const { meeting, ...dataToSave } = newProjectData;
+    await addProjectMutation.mutateAsync(dataToSave);
     refetch();
     setIsAdding(false);
   };
