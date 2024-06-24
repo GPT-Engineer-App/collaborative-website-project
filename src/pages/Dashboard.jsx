@@ -8,7 +8,7 @@ import SortControls from '../components/SortControls';
 import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useAddProject } from '../integrations/supabase/index.js';
 
 const Dashboard = () => {
-  const { data: tasks, refetch } = useTasks();
+  const { data: tasks, refetch, isLoading, error } = useTasks();
   const addTaskMutation = useAddTask();
   const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
@@ -28,10 +28,6 @@ const Dashboard = () => {
       {
         Header: 'Task',
         accessor: 'task',
-      },
-      {
-        Header: 'Meeting',
-        accessor: 'meeting',
       },
       {
         Header: 'Project',
@@ -109,7 +105,6 @@ const Dashboard = () => {
 
   const filteredTasks = tasks?.filter(task => 
     task.task.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.meeting.toLowerCase().includes(searchTerm.toLowerCase()) ||
     task.project.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -128,11 +123,13 @@ const Dashboard = () => {
     return sortedTasks?.slice(start, end);
   }, [sortedTasks, currentPage, pageSize]);
 
-  // Sample data to ensure functionality
-  const sampleData = [
-    { task: 'Task 1', meeting: 'Meeting 1', project: 'Project 1' },
-    { task: 'Task 2', meeting: 'Meeting 2', project: 'Project 2' },
-  ];
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className="p-4">
@@ -144,7 +141,7 @@ const Dashboard = () => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search tasks and meetings..."
+          placeholder="Search tasks and projects..."
           className="p-2 border rounded mb-4"
         />
         <button
@@ -153,7 +150,7 @@ const Dashboard = () => {
         >
           Add New
         </button>
-        <DataTable columns={columns} data={sampleData} />
+        <DataTable columns={columns} data={paginatedTasks} />
         <div className="pagination mt-4">
           <button onClick={() => setCurrentPage(0)} disabled={currentPage === 0}>
             {'<<'}
