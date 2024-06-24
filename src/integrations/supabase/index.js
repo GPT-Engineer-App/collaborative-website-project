@@ -1,4 +1,3 @@
-```javascript
 import { createClient } from '@supabase/supabase-js';
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -17,165 +16,6 @@ const fromSupabase = async (query) => {
     if (error) throw new Error(error.message);
     return data;
 };
-
-/* supabase integration types
-
-### slider_votes
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| project_id | uuid        | string | true     |
-| user_id    | uuid        | string | true     |
-| slider_value | double precision | number | true |
-| weight     | double precision | number | true |
-| created_at | timestamptz | string | false    |
-| updated_at | timestamptz | string | false    |
-
-### groups
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| group_id   | uuid        | string | false    |
-| group_name | varchar(100)| string | true     |
-| description| text        | string | false    |
-| created_at | timestamptz | string | false    |
-| updated_at | timestamptz | string | false    |
-
-### voting
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| project_id | uuid        | string | true     |
-| user_id    | uuid        | string | true     |
-| slider_value | double precision | number | true |
-| user_score | int         | number | true     |
-| comment_id | uuid        | string | false    |
-| created_at | timestamptz | string | false    |
-| updated_at | timestamptz | string | false    |
-
-### tasks
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| task_id    | uuid        | string | true     |
-| user_id    | uuid        | string | true     |
-| title      | varchar(255)| string | true     |
-| description| text        | string | false    |
-| category_id| uuid        | string | false    |
-| priority   | varchar(50) | string | false    |
-| status     | varchar(50) | string | false    |
-| due_date   | timestamp   | string | false    |
-| created_at | timestamp   | string | false    |
-| updated_at | timestamp   | string | false    |
-
-### profiles
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| profile_id | uuid        | string | true     |
-| user_id    | uuid        | string | true     |
-| bio        | text        | string | false    |
-| avatar_url | varchar(255)| string | false    |
-| created_at | timestamp   | string | false    |
-| updated_at | timestamp   | string | false    |
-
-### task_tags
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| task_id    | uuid        | string | true     |
-| tag_id     | uuid        | string | true     |
-
-### projects
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| project_id | uuid        | string | false    |
-| project_name | varchar(100)| string | true     |
-| description| text        | string | false    |
-| start_date | timestamptz | string | false    |
-| end_date   | timestamptz | string | false    |
-
-### files
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| file_id    | uuid        | string | false    |
-| uploader_id| uuid        | string | true     |
-| file_name  | text        | string | true     |
-| file_type  | text        | string | false    |
-| file_size  | int8        | number | false    |
-| upload_date| timestamptz | string | false    |
-| version    | int         | number | false    |
-| is_active  | boolean     | boolean| false    |
-| group_id   | uuid        | string | false    |
-
-### user_scores
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| user_id    | uuid        | string | true     |
-| score      | int         | number | true     |
-| created_at | timestamptz | string | false    |
-| updated_at | timestamptz | string | false    |
-
-### comments
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| comment_id | uuid        | string | true     |
-| task_id    | uuid        | string | true     |
-| user_id    | uuid        | string | true     |
-| content    | text        | string | true     |
-| created_at | timestamp   | string | false    |
-
-### tags
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| tag_id     | uuid        | string | true     |
-| tag_name   | varchar(50) | string | true     |
-| tag_description | text   | string | false    |
-
-### users
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| id         | int8        | number | true     |
-| user_id    | uuid        | string | false    |
-| username   | varchar(100)| string | true     |
-| group_id   | uuid        | string | false    |
-| created_at | timestamptz | string | false    |
-| updated_at | timestamptz | string | false    |
-| email      | varchar(100)| string | true     |
-| password_hash | varchar(255)| string | true   |
-| first_name | varchar(50) | string | false    |
-| last_name  | varchar(50) | string | false    |
-
-### sessions
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| session_id | uuid        | string | true     |
-| user_id    | uuid        | string | true     |
-| token      | varchar(255)| string | true     |
-| created_at | timestamp   | string | false    |
-| expires_at | timestamp   | string | false    |
-
-### categories
-
-| name       | type        | format | required |
-|------------|-------------|--------|----------|
-| category_id| uuid        | string | true     |
-| name       | varchar(50) | string | true     |
-
-*/
 
 // Hooks for slider_votes
 export const useSliderVotes = () => useQuery({
@@ -491,4 +331,150 @@ export const useAddComment = () => {
 export const useUpdateComment = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (updated
+        mutationFn: (updatedComment) => fromSupabase(supabase.from('comments').update(updatedComment).eq('comment_id', updatedComment.comment_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('comments');
+        },
+    });
+};
+export const useDeleteComment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (comment_id) => fromSupabase(supabase.from('comments').delete().eq('comment_id', comment_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('comments');
+        },
+    });
+};
+
+// Hooks for tags
+export const useTags = () => useQuery({
+    queryKey: ['tags'],
+    queryFn: () => fromSupabase(supabase.from('tags').select('*')),
+});
+export const useAddTag = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newTag) => fromSupabase(supabase.from('tags').insert([newTag])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('tags');
+        },
+    });
+};
+export const useUpdateTag = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedTag) => fromSupabase(supabase.from('tags').update(updatedTag).eq('tag_id', updatedTag.tag_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('tags');
+        },
+    });
+};
+export const useDeleteTag = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (tag_id) => fromSupabase(supabase.from('tags').delete().eq('tag_id', tag_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('tags');
+        },
+    });
+};
+
+// Hooks for users
+export const useUsers = () => useQuery({
+    queryKey: ['users'],
+    queryFn: () => fromSupabase(supabase.from('users').select('*')),
+});
+export const useAddUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newUser) => fromSupabase(supabase.from('users').insert([newUser])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('users');
+        },
+    });
+};
+export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedUser) => fromSupabase(supabase.from('users').update(updatedUser).eq('id', updatedUser.id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('users');
+        },
+    });
+};
+export const useDeleteUser = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('users').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('users');
+        },
+    });
+};
+
+// Hooks for sessions
+export const useSessions = () => useQuery({
+    queryKey: ['sessions'],
+    queryFn: () => fromSupabase(supabase.from('sessions').select('*')),
+});
+export const useAddSession = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newSession) => fromSupabase(supabase.from('sessions').insert([newSession])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('sessions');
+        },
+    });
+};
+export const useUpdateSession = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedSession) => fromSupabase(supabase.from('sessions').update(updatedSession).eq('session_id', updatedSession.session_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('sessions');
+        },
+    });
+};
+export const useDeleteSession = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (session_id) => fromSupabase(supabase.from('sessions').delete().eq('session_id', session_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('sessions');
+        },
+    });
+};
+
+// Hooks for categories
+export const useCategories = () => useQuery({
+    queryKey: ['categories'],
+    queryFn: () => fromSupabase(supabase.from('categories').select('*')),
+});
+export const useAddCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newCategory) => fromSupabase(supabase.from('categories').insert([newCategory])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('categories');
+        },
+    });
+};
+export const useUpdateCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedCategory) => fromSupabase(supabase.from('categories').update(updatedCategory).eq('category_id', updatedCategory.category_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('categories');
+        },
+    });
+};
+export const useDeleteCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (category_id) => fromSupabase(supabase.from('categories').delete().eq('category_id', category_id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('categories');
+        },
+    });
+};
