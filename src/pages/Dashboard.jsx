@@ -17,6 +17,7 @@ const Dashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const columns = useMemo(
     () => [
@@ -98,18 +99,31 @@ const Dashboard = () => {
     refetch();
   }, [addTaskMutation.isSuccess, updateTaskMutation.isSuccess, deleteTaskMutation.isSuccess]);
 
+  const filteredTasks = tasks?.filter(task => 
+    task.task.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    task.meeting.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    task.project.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold">Dashboard</h1>
       <p>Welcome back, John! Here's a quick overview of your projects and tasks.</p>
       <div className="mt-8">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search tasks and meetings..."
+          className="p-2 border rounded mb-4"
+        />
         <button
           onClick={() => setIsAdding(true)}
           className="bg-green-500 text-white px-4 py-2 rounded mb-4"
         >
           Add New
         </button>
-        <DataTable columns={columns} data={tasks || []} />
+        <DataTable columns={columns} data={filteredTasks || []} />
       </div>
       {isEditing && (
         <EditDataForm
