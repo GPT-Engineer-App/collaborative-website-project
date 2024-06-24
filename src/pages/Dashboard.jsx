@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import DataTable from '../components/DataTable';
-import EditDataForm from '../components/EditDataForm';
+import DeleteConfirmation from '../components/DeleteConfirmation';
 
 const Dashboard = () => {
-  const [selectedData, setSelectedData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const data = useMemo(
     () => [
@@ -45,10 +45,10 @@ const Dashboard = () => {
         Header: 'Actions',
         Cell: ({ row }) => (
           <button
-            onClick={() => handleEdit(row.original)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded"
+            onClick={() => handleDelete(row.original)}
+            className="bg-red-500 text-white px-4 py-2 rounded"
           >
-            Edit
+            Delete
           </button>
         ),
       },
@@ -56,20 +56,21 @@ const Dashboard = () => {
     []
   );
 
-  const handleEdit = (data) => {
-    setSelectedData(data);
-    setIsEditing(true);
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+    setIsDeleteOpen(true);
   };
 
-  const handleSave = (updatedData) => {
-    // Update the data state with the edited data
-    // This is a placeholder logic, you should replace it with actual update logic
-    console.log('Updated Data:', updatedData);
-    setIsEditing(false);
+  const confirmDelete = () => {
+    // Logic to delete the item
+    console.log('Deleting item:', itemToDelete);
+    setIsDeleteOpen(false);
+    setItemToDelete(null);
   };
 
-  const handleCancel = () => {
-    setIsEditing(false);
+  const closeDelete = () => {
+    setIsDeleteOpen(false);
+    setItemToDelete(null);
   };
 
   return (
@@ -79,13 +80,12 @@ const Dashboard = () => {
       <div className="mt-8">
         <DataTable columns={columns} data={data} />
       </div>
-      {isEditing && (
-        <EditDataForm
-          selectedData={selectedData}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-      )}
+      <DeleteConfirmation
+        isOpen={isDeleteOpen}
+        onClose={closeDelete}
+        onConfirm={confirmDelete}
+        item={itemToDelete ? itemToDelete.task || itemToDelete.meeting : ''}
+      />
     </div>
   );
 };
