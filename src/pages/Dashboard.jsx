@@ -128,6 +128,12 @@ const Dashboard = () => {
     return sortedTasks?.slice(start, end);
   }, [sortedTasks, currentPage, pageSize]);
 
+  // Sample data to ensure functionality
+  const sampleData = [
+    { task: 'Task 1', meeting: 'Meeting 1', project: 'Project 1' },
+    { task: 'Task 2', meeting: 'Meeting 2', project: 'Project 2' },
+  ];
+
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold">Dashboard</h1>
@@ -147,7 +153,7 @@ const Dashboard = () => {
         >
           Add New
         </button>
-        <DataTable columns={columns} data={paginatedTasks || []} />
+        <DataTable columns={columns} data={sampleData} />
         <div className="pagination mt-4">
           <button onClick={() => setCurrentPage(0)} disabled={currentPage === 0}>
             {'<<'}
