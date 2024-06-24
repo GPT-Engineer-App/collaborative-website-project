@@ -4,13 +4,14 @@ import EditDataForm from '../components/EditDataForm';
 import AddDataForm from '../components/AddDataForm';
 import DeleteConfirmation from '../components/DeleteConfirmation';
 
-import { useTasks, useAddTask, useUpdateTask, useDeleteTask } from '../integrations/supabase/index.js';
+import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useAddProject } from '../integrations/supabase/index.js';
 
 const Dashboard = () => {
   const { data: tasks, refetch } = useTasks();
   const addTaskMutation = useAddTask();
   const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
+  const addProjectMutation = useAddProject();
 
   const [selectedData, setSelectedData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -75,6 +76,12 @@ const Dashboard = () => {
     setIsAdding(false);
   };
 
+  const handleSaveProject = async (newProjectData) => {
+    await addProjectMutation.mutateAsync(newProjectData);
+    refetch();
+    setIsAdding(false);
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     setIsAdding(false);
@@ -113,7 +120,7 @@ const Dashboard = () => {
       )}
       {isAdding && (
         <AddDataForm
-          onSave={handleSave}
+          onSave={handleSaveProject}
           onCancel={handleCancel}
         />
       )}
