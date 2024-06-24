@@ -3,6 +3,7 @@ import DataTable from '../components/DataTable';
 import EditDataForm from '../components/EditDataForm';
 import AddDataForm from '../components/AddDataForm';
 import DeleteConfirmation from '../components/DeleteConfirmation';
+import SortControls from '../components/SortControls';
 
 import { useTasks, useAddTask, useUpdateTask, useDeleteTask, useAddProject } from '../integrations/supabase/index.js';
 
@@ -20,6 +21,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+  const [sortCriteria, setSortCriteria] = useState('');
 
   const columns = useMemo(
     () => [
@@ -97,6 +99,10 @@ const Dashboard = () => {
     setIsDeleting(false);
   };
 
+  const handleSortChange = (criteria) => {
+    setSortCriteria(criteria);
+  };
+
   useEffect(() => {
     refetch();
   }, [addTaskMutation.isSuccess, updateTaskMutation.isSuccess, deleteTaskMutation.isSuccess]);
@@ -107,17 +113,27 @@ const Dashboard = () => {
     task.project.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const sortedTasks = useMemo(() => {
+    if (!tasks) return [];
+    return [...tasks].sort((a, b) => {
+      if (a[sortCriteria] < b[sortCriteria]) return -1;
+      if (a[sortCriteria] > b[sortCriteria]) return 1;
+      return 0;
+    });
+  }, [tasks, sortCriteria]);
+
   const paginatedTasks = useMemo(() => {
     const start = currentPage * pageSize;
     const end = start + pageSize;
-    return filteredTasks?.slice(start, end);
-  }, [filteredTasks, currentPage, pageSize]);
+    return sortedTasks?.slice(start, end);
+  }, [sortedTasks, currentPage, pageSize]);
 
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold">Dashboard</h1>
       <p>Welcome back, John! Here's a quick overview of your projects and tasks.</p>
       <div className="mt-8">
+        <SortControls onSortChange={handleSortChange} />
         <input
           type="text"
           value={searchTerm}
